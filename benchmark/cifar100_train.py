@@ -93,7 +93,8 @@ def evaluate():
     print(stats)
 
 if __name__ == '__main__':
-    if opt.evaluate:
+    if opt.evaluate == True:
+        print("Waaarom???")
         evaluate()
         exit(0)
     main()

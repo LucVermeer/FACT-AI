@@ -15,11 +15,11 @@ opt = parser.parse_args()
 scheme_list = list()
 
 # Variables
-num_of_gpu = 1      # Number of available GPUs
-num_per_gpu = 1     # Number of DNNs per GPU
-num_epochs = 2      # Number of epochs
+num_of_gpu = 20      # Number of available GPUs
+num_per_gpu = 20     # Number of DNNs per GPU
+num_epochs = 100      # Number of epochs
 k = 3
-Cmax = 1
+Cmax = 1500
 
 
 def write():
