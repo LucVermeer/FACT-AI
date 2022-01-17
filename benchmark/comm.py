@@ -99,6 +99,14 @@ def split(aug_list):
         return ret_list
 
 def preprocess(opt, defs, valid=False):
+    """
+    Preprocess data and define loss function
+
+    Inputs:
+        opt - Parser arguments
+        defs - 
+        valid - Use validation set
+    """
     if opt.data == 'cifar100':
         loss_fn, trainloader, validloader =  inversefed.construct_dataloaders('CIFAR100', defs)
         trainset, validset = _build_cifar100('~/data/')

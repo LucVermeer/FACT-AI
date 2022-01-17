@@ -21,6 +21,7 @@ import torch.nn.functional as F
 from benchmark.comm import create_model, build_transform, preprocess, create_config
 import policy
 import copy
+import time
 
 policies = policy.policies
 
@@ -174,12 +175,12 @@ def main():
     model = create_model(opt)
     model.to(**setup)
     old_state_dict = copy.deepcopy(model.state_dict())
-    model.load_state_dict(torch.load('checkpoints/tiny_data_{}_arch_{}/{}.pth'.format(opt.data, opt.arch, opt.epochs)))
+    # model.load_state_dict(torch.load('checkpoints/tiny_data_{}_arch_{}/{}.pth'.format(opt.data, opt.arch, opt.epochs)))
+    model.load_state_dict(torch.load('checkpoints/data_cifar100_arch_ResNet20_mode_normal_auglist_None_rlabel_True/ResNet20_200.pth'))
 
     model.eval()
     metric_list = list()
 
-    import time
     start = time.time()
 
     if True:
