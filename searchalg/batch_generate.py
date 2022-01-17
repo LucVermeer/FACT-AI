@@ -16,24 +16,26 @@ opt = parser.parse_args()
 scheme_list = list()
 
 # Variables
-num_of_gpu = 20      # Number of available GPUs
-num_per_gpu = 20     # Number of DNNs per GPU
-num_epochs = 100      # Number of epochs
+num_per_gpu = 4     # Number of DNNs per GPU
+num_epochs = 200      # Number of epochs
 k = 3
 Cmax = 1500
 
 
+
 def write():
     for i in range(len(scheme_list) // num_per_gpu):
-        print('{')
-        for idx in range(i*num_per_gpu, i*num_per_gpu + num_per_gpu):
+        for id, idx in enumerate(range(i*num_per_gpu, i*num_per_gpu + num_per_gpu)):
             sch_list = [str(sch) for sch in scheme_list[idx]]
             suf = '-'.join(sch_list)
 
-            cmd = f'CUDA_VISIBLE_DEVICES={i % num_of_gpu} python benchmark/search_transform_attack.py' + \
+            cmd = f'python benchmark/search_transform_attack.py' + \
                   f' --aug_list={suf} --mode=aug --arch={opt.arch} --data={opt.data} --epochs={num_epochs}'
+
+            if id != i*num_per_gpu + num_per_gpu - 1:
+                cmd += '&'
             print(cmd)
-        print('}&&')
+        print('wait')
 
 
 def backtracing(num):
