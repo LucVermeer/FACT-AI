@@ -6,6 +6,7 @@ import numpy as np
 
 # For reproducibility
 random.seed(42)
+np.random.seed(42)
 
 parser = argparse.ArgumentParser(description='Reconstruct some image from a trained model.')
 parser.add_argument('--arch', default=None, required=True, type=str, help='Vision model.')
