@@ -22,6 +22,10 @@ from inversefed.utils import Cutout
 import torch.nn.functional as F
 import torch.nn as nn
 import policy
+# from create_tiny_dataset import create_tiny_cifar100
+from torchvision.datasets import CIFAR100
+from torch.utils.data import random_split
+import torch.utils.data as data
 
 from benchmark.comm import create_model, build_transform, preprocess, create_config
 
@@ -49,21 +53,50 @@ arch = opt.arch
 trained_model = True
 mode = opt.mode
 assert mode in ['normal', 'aug', 'crop']
+create_tiny_dataset = True
+
+def create_tiny_cifar100():
+    train_dataset, val_dataset = _build_cifar100('/scratch/', augmentations=False, normalize=False)
+
+    validation_size = 500
+    batch_size = 32
+
+    train_dataset, _ = random_split(train_dataset,
+                                    lengths=[len(train_dataset) - validation_size, validation_size])
+    _, val_dataset = random_split(val_dataset, 
+                                  lengths=[len(val_dataset) - validation_size, validation_size])
+    
+    trainloader = data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+    validloader = data.DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
 
 
-def create_save_dir():
-    return 'checkpoints/data_{}_arch_{}_mode_{}_auglist_{}_rlabel_{}'.format(opt.data, opt.arch, opt.mode, opt.aug_list, opt.rlabel)
+    return trainloader, validloader
+
+def create_save_dir(tiny=False):
+    if tiny:
+        return 'checkpoints/tiny_data_{}_arch_{}_mode_{}_auglist_{}_rlabel_{}'.format(opt.data, opt.arch, opt.mode, opt.aug_list, opt.rlabel)
+    else:
+        return 'checkpoints/data_{}_arch_{}_mode_{}_auglist_{}_rlabel_{}'.format(opt.data, opt.arch, opt.mode, opt.aug_list, opt.rlabel)
 
 
 def main():
     setup = inversefed.utils.system_startup()
     defs = inversefed.training_strategy('conservative'); defs.epochs = opt.epochs
-    loss_fn, trainloader, validloader = preprocess(opt, defs)
+    
+    if create_tiny_dataset:
+        loss_fn, _, _ = preprocess(opt, defs)
+        trainloader, validloader = create_tiny_cifar100()
+    else:
+        loss_fn, trainloader, validloader = preprocess(opt, defs)
 
     # init model
     model = create_model(opt)
     model.to(**setup)
-    save_dir = create_save_dir()
+    if create_tiny_dataset:
+        save_dir = create_save_dir(tiny=True)
+    else:
+        save_dir = create_save_dir()
+
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     file = f'{save_dir}/{arch}_{defs.epochs}.pth'
@@ -93,8 +126,8 @@ def evaluate():
     print(stats)
 
 if __name__ == '__main__':
-    if opt.evaluate == True:
-        print("Waaarom???")
-        evaluate()
-        exit(0)
+    # if opt.evaluate == True:
+    #     print("Waaarom???")
+    #     evaluate()
+    #     exit(0)
     main()

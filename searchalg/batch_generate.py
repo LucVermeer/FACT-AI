@@ -17,7 +17,7 @@ scheme_list = list()
 
 # Variables
 num_per_gpu = 4     # Number of DNNs per GPU
-num_epochs = 200      # Number of epochs
+num_epochs = 50      # Number of epochs
 k = 3
 Cmax = 1500
 
