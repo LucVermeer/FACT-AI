@@ -1,3 +1,4 @@
+from logging.config import valid_ident
 import os, sys
 sys.path.insert(0, './')
 import torch
@@ -57,14 +58,17 @@ create_tiny_dataset = True
 
 def create_tiny_cifar100():
     train_dataset, val_dataset = _build_cifar100('/scratch/', augmentations=False, normalize=False)
+    
+    train_indices = torch.arange(5000)
+    val_indices = torch.arange(1000)
+
+    train_dataset = data.Subset(train_dataset, train_indices)
+    val_dataset = data.Subset(val_dataset, val_indices)
+    
     batch_size = 32
 
-    
     trainloader = data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
     validloader = data.DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
-
-    trainloader = trainloader[:5000]
-    validloader = validloader[:1000]
 
     return trainloader, validloader
 
