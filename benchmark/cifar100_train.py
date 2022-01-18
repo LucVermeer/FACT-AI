@@ -57,18 +57,14 @@ create_tiny_dataset = True
 
 def create_tiny_cifar100():
     train_dataset, val_dataset = _build_cifar100('/scratch/', augmentations=False, normalize=False)
-
-    validation_size = 500
     batch_size = 32
 
-    train_dataset, _ = random_split(train_dataset,
-                                    lengths=[len(train_dataset) - validation_size, validation_size])
-    _, val_dataset = random_split(val_dataset, 
-                                  lengths=[len(val_dataset) - validation_size, validation_size])
     
     trainloader = data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
     validloader = data.DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
 
+    trainloader = trainloader[:5000]
+    validloader = validloader[:1000]
 
     return trainloader, validloader
 

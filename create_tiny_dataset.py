@@ -49,6 +49,8 @@ def create_tiny_cifar100():
     trainloader = data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
     validloader = data.DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
 
+    trainloader = trainloader[:5000]
+    validloader = validloader[:1000]
 
     return trainloader, validloader
 
