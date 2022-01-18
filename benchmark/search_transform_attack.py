@@ -175,8 +175,8 @@ def main():
     model = create_model(opt)
     model.to(**setup)
     old_state_dict = copy.deepcopy(model.state_dict())
-    # model.load_state_dict(torch.load('checkpoints/tiny_data_{}_arch_{}/{}.pth'.format(opt.data, opt.arch, opt.epochs)))
-    model.load_state_dict(torch.load('checkpoints/data_cifar100_arch_ResNet20_mode_normal_auglist_None_rlabel_True/ResNet20_200.pth'))
+    model.load_state_dict(torch.load('checkpoints/tiny_data_{}_arch_{}/{}.pth'.format(opt.data, opt.arch, opt.epochs)))
+    # model.load_state_dict(torch.load('checkpoints/data_cifar100_arch_ResNet20_mode_normal_auglist_None_rlabel_True/ResNet20_200.pth'))
 
     model.eval()
     metric_list = list()
@@ -187,6 +187,7 @@ def main():
         sample_list = [200+i*5 for i in range(100)]
         metric_list = list()
         for attack_id, idx in enumerate(sample_list):
+            # Attack model.
             metric = reconstruct(idx, model, loss_fn, trainloader, validloader)
             metric_list.append(metric)
             print('attach {}th in {}, metric {}'.format(attack_id, opt.aug_list, metric))
