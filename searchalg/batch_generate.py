@@ -43,7 +43,7 @@ def backtracing(num):
     TODO: Wat betekent 'num'?
     """
     for _ in range(Cmax):
-        scheme = list(np.random.randint(-1, 51, k))
+        scheme = list(np.random.randint(-1, 50, k))
         new_policy = deepcopy(scheme)
         new_policy = [x for x in scheme if x >= 0]
         scheme_list.append(new_policy)
