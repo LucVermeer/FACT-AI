@@ -85,6 +85,7 @@ def cal_dis(a, b, metric='L2'):
 
 
 def accuracy_metric(idx_list, model, loss_fn, trainloader, validloader):
+    # These values are not used later?
     if opt.data == 'cifar100':
         dm = torch.as_tensor(inversefed.consts.cifar10_mean, **setup)[:, None, None]
         ds = torch.as_tensor(inversefed.consts.cifar10_std, **setup)[:, None, None]
@@ -175,8 +176,9 @@ def main():
     model = create_model(opt)
     model.to(**setup)
     old_state_dict = copy.deepcopy(model.state_dict())
-    model.load_state_dict(torch.load('checkpoints/tiny_data_{}_arch_{}/{}.pth'.format(opt.data, opt.arch, opt.epochs)))
-    # model.load_state_dict(torch.load('checkpoints/data_cifar100_arch_ResNet20_mode_normal_auglist_None_rlabel_True/ResNet20_200.pth'))
+    # model.load_state_dict(torch.load('checkpoints/tiny_data_{}_arch_{}/{}.pth'.format(opt.data, opt.arch, opt.epochs)))
+    model.load_state_dict(torch.load('checkpoints/tiny_data_cifar100_arch_ResNet20-4_mode_normal_auglist_None_rlabel_True/ResNet20-4_50.pth'))
+
 
     model.eval()
     metric_list = list()
@@ -204,8 +206,8 @@ def main():
     model.load_state_dict(old_state_dict)
     score_list = list()
     for run in range(10):
-        large_samle_list = [200 + run  * 100 + i for i in range(100)]
-        score = accuracy_metric(large_samle_list, model, loss_fn, trainloader, validloader)
+        large_sample_list = [200 + run  * 100 + i for i in range(100)]
+        score = accuracy_metric(large_sample_list, model, loss_fn, trainloader, validloader)
         score_list.append(score)
     
     print('time cost ', time.time() - start)
