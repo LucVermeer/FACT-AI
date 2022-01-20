@@ -15,7 +15,7 @@ import inversefed
 import torchvision.transforms as transforms
 import argparse
 from autoaugment import SubPolicy
-from inversefed.data.data_processing import _build_cifar100, _get_meanstd
+from inversefed.data.data_processing import _build_cifar100, _build_imagenet, _get_meanstd
 import torch.nn.functional as F
 from benchmark.comm import create_model, build_transform, preprocess, create_config
 from torch.utils.data import SubsetRandomSampler
@@ -52,6 +52,25 @@ def create_tiny_cifar100():
     trainloader = trainloader[:5000]
     validloader = validloader[:1000]
 
+    return trainloader, validloader
+
+def create_tiny_imagenet(n_classes=100, class_size=500):
+    train_dataset, val_dataset = _build_imagenet('/scratch/', augmentations=False, normalize=False)
+
+    # select classes
+    idx_classes = torch.multinomial(torch.arange(1000), num_samples=n_classes, replacement=False)
+
+    # get indices that correspond to the selected classes with correct class size
+    train_dataset_idx_list = [(train_dataset.targets == class_id).nonzero(as_tuple=True)[:class_size] for class_id in idx_classes]
+    val_dataset_idx_list = [(val_dataset.targets == class_id).nonzero(as_tuple=True)[:class_size] for class_id in idx_classes]
+
+    train_dataset = data.Subset(train_dataset, torch.cat(train_dataset_idx_list))
+    val_dataset = data.Subset(val_dataset, torch.cat(val_dataset_idx_list))
+    
+    batch_size = 32
+
+    trainloader = data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+    validloader = data.DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
     return trainloader, validloader
 
 # def main():
@@ -94,5 +113,5 @@ def create_tiny_cifar100():
 #                     targets.extend(entry['fine_labels'])
 
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    create_tiny_imagenet()
