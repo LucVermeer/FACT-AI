@@ -38,8 +38,8 @@ parser = argparse.ArgumentParser(description='Reconstruct some image from a trai
 parser.add_argument('--arch', default=None, required=True, type=str, help='Vision model.')
 parser.add_argument('--data', default=None, required=True, type=str, help='Vision dataset.')
 parser.add_argument('--epochs', default=None, required=True, type=int, help='Vision epoch.')
-parser.add_argument('--aug_list', default=None, required=True, type=str, help='Augmentation method.')
-parser.add_argument('--mode', default=None, required=True, type=str, help='Mode.')
+parser.add_argument('--aug_list', default=[], required=False, type=str, help='Augmentation method.')
+parser.add_argument('--mode', default='normal', required=False, type=str, help='Mode.')
 parser.add_argument('--rlabel', default=False, type=bool, help='remove label.')
 parser.add_argument('--evaluate', default=False, type=bool, help='Evaluate')
 
@@ -54,7 +54,7 @@ arch = opt.arch
 trained_model = True
 mode = opt.mode
 assert mode in ['normal', 'aug', 'crop']
-create_tiny_dataset = True
+create_tiny_dataset = False
 
 def create_tiny_cifar100():
     train_dataset, val_dataset = _build_cifar100('/scratch/', augmentations=False, normalize=False)
@@ -100,7 +100,15 @@ def main():
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     file = f'{save_dir}/{arch}_{defs.epochs}.pth'
-    inversefed.train(model, loss_fn, trainloader, validloader, defs, setup=setup, save_dir=save_dir)
+    
+    stats_path = f'training/{arch}_{defs.epochs}_{opt.aug_list}'
+    if not os.path.exists(stats_path):
+            os.makedirs(stats_path)
+
+    stats = inversefed.train(model, loss_fn, trainloader, validloader, defs, setup=setup, save_dir=save_dir)
+    
+    np.save(stats_path, stats)
+
     torch.save(model.state_dict(), f'{file}')
     model.eval()
 

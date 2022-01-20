@@ -113,6 +113,7 @@ def preprocess(opt, defs, valid=False):
 
         if len(opt.aug_list) > 0:
             policy_list = split(opt.aug_list)
+            print("Policy list:", policy_list)
         else:
             policy_list = []
         if not valid:
