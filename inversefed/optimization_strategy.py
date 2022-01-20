@@ -38,7 +38,7 @@ class Strategy:
             self.lr = lr
         if dryrun:
             self.dryrun = dryrun
-        self.validate = 10
+        self.validate = 1
 
 @dataclass
 class ConservativeStrategy(Strategy):
