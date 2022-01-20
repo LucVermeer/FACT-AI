@@ -6,25 +6,21 @@ policies = [
         SubPolicy(0.7, "rotate", 2),
         SubPolicy(0.3, "translateX", 9),
         SubPolicy(0.8, "sharpness", 1),
-
         SubPolicy(0.9, "sharpness", 3),
         SubPolicy(0.5, "shearY", 2),
         SubPolicy(0.7, "translateY", 2) ,
         SubPolicy(0.5, "autocontrast", 5),
         SubPolicy(0.9, "equalize", 2), #
-
         SubPolicy(0.2, "shearY", 5),
         SubPolicy(0.3, "posterize", 5), #
         SubPolicy(0.4, "color", 3),
         SubPolicy(0.6, "brightness", 5), #
         SubPolicy(0.3, "sharpness", 9),
-
         SubPolicy(0.7, "brightness", 9),
         SubPolicy(0.6, "equalize", 5),
         SubPolicy(0.5, "equalize", 1),
         SubPolicy(0.6, "contrast", 7),
         SubPolicy(0.6, "sharpness", 5),
-        
         SubPolicy(0.7, "color", 5),
         SubPolicy(0.5, "translateX", 5), #
         SubPolicy(0.3, "equalize", 7),
