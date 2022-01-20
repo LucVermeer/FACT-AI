@@ -71,6 +71,7 @@ def create_tiny_imagenet(n_classes=100, class_size=500):
 
     trainloader = data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
     validloader = data.DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
+    
     return trainloader, validloader
 
 # def main():
