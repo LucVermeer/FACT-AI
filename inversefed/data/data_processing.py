@@ -11,6 +11,7 @@ from ..consts import *
 
 from .data import _build_bsds_sr, _build_bsds_dn
 from .loss import Classification, PSNR
+from create_imagenette import Imagenette
 
 
 def construct_dataloaders(dataset, defs, data_path='~/data', shuffle=True, normalize=True):
@@ -31,6 +32,9 @@ def construct_dataloaders(dataset, defs, data_path='~/data', shuffle=True, norma
         loss_fn = Classification()
     elif dataset == 'ImageNet':
         trainset, validset = _build_imagenet(path, defs.augmentations, normalize)
+        loss_fn = Classification()
+    elif dataset == 'Imagenette':
+        trainset, validset = _build_imagenette(augmentations=defs.augmentations, normalize=normalize)
         loss_fn = Classification()
     elif dataset == 'BSDS-SR':
         trainset, validset = _build_bsds_sr(path, defs.augmentations, normalize, upscale_factor=3, RGB=True)
@@ -54,6 +58,42 @@ def construct_dataloaders(dataset, defs, data_path='~/data', shuffle=True, norma
 
     return loss_fn, trainloader, validloader
 
+def get_mean_std(train_dataset):
+    mean_train = torch.mean(train_dataset.dataset.data[train_dataset.indices], dim=0)
+    std_train = torch.std(train_dataset.dataset.data[train_dataset.indices], dim=0)
+    return mean_train, std_train
+
+
+def _build_imagenette(csv_file="imagenette2/noisy_imagenette.csv", root_dir='/imagenette2', augmentations=False, normalize=True):
+    """Define ImageNet with everything considered."""
+    # Load data
+    dataset = Imagenette(csv_file, root_dir)
+    train_size = int(0.8 * len(dataset))
+    test_size = len(dataset) - train_size
+    trainset, validset = torch.utils.data.random_split(dataset, [train_size, test_size], generator=torch.Generator().manual_seed(42))
+
+    if imagenet_mean is None:
+        data_mean, data_std = get_mean_std(trainset)
+    else:
+        data_mean, data_std = imagenet_mean, imagenet_std
+
+    # Organize preprocessing
+    transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize(data_mean, data_std) if normalize else transforms.Lambda(lambda x : x)])
+    if augmentations:
+        transform_train = transforms.Compose([
+            transforms.RandomResizedCrop(224),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(data_mean, data_std) if normalize else transforms.Lambda(lambda x : x)])
+        trainset.transform = transform_train
+    else:
+        trainset.transform = transform
+    validset.transform = transform
+    return trainset, validset
 
 def _build_cifar10(data_path, augmentations=True, normalize=True):
     """Define CIFAR-10 with everything considered."""
@@ -203,7 +243,7 @@ def _build_imagenet(data_path, augmentations=True, normalize=True):
 
 
 def _get_meanstd(dataset):
-    cc = torch.cat([trainset[i][0].reshape(3, -1) for i in range(len(trainset))], dim=1)
-    data_mean = torch.mean(cc, dim=1).tolist()
-    data_std = torch.std(cc, dim=1).tolist()
+    cc = torch.cat([dataset[i][0].reshape(3, -1) for i in range(len(dataset))], dim=1)
+    data_mean = torch.mean(dataset, dim=1).tolist()
+    data_std = torch.std(dataset, dim=1).tolist()
     return data_mean, data_std

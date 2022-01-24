@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import torchvision
 import inversefed
-from inversefed.data.data_processing import _build_cifar100, _get_meanstd
+from inversefed.data.data_processing import _build_cifar100, _get_meanstd, _build_imagenette
 import torchvision.transforms as transforms
 import argparse
 from autoaugment import SubPolicy
@@ -22,6 +22,8 @@ def create_model(opt):
         model, _ = inversefed.construct_model(arch, num_classes=100, num_channels=3)
     elif opt.data == 'FashionMinist':
         model, _ = inversefed.construct_model(arch, num_classes=10, num_channels=1)
+    elif opt.data == 'Imagenette':
+        model, _ = inversefed.construct_model(arch, num_classes=10, num_channels=3)
     return model
 
 
@@ -53,6 +55,8 @@ def build_transform(normalize=True, policy_list=list(), opt=None, defs=None):
         data_mean, data_std = inversefed.consts.cifar10_mean, inversefed.consts.cifar10_std
     elif opt.data == 'FashionMinist':
         data_mean, data_std  = (0.1307,), (0.3081,)
+    elif opt.data == 'Imagenette':
+        data_mean, data_std = inversefed.consts.imagenet_mean, inversefed.consts.imagenet_std
     else:
         raise NotImplementedError
 
@@ -110,6 +114,28 @@ def preprocess(opt, defs, valid=False):
     if opt.data == 'cifar100':
         loss_fn, trainloader, validloader =  inversefed.construct_dataloaders('CIFAR100', defs)
         trainset, validset = _build_cifar100('~/data/')
+
+        if len(opt.aug_list) > 0:
+            policy_list = split(opt.aug_list)
+            print("Policy list:", policy_list)
+        else:
+            policy_list = []
+        if not valid:
+            trainset.transform = build_transform(True, policy_list, opt, defs)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=defs.batch_size,
+                    shuffle=True, drop_last=False, num_workers=4, pin_memory=True)
+
+
+        if valid:
+            validset.transform = build_transform(True, policy_list, opt, defs)
+        validloader = torch.utils.data.DataLoader(validset, batch_size=defs.batch_size,
+                shuffle=False, drop_last=False, num_workers=4, pin_memory=True)
+
+        return loss_fn, trainloader, validloader
+        
+    if opt.data == 'Imagenette':
+        loss_fn, trainloader, validloader =  inversefed.construct_dataloaders('Imagenette', defs)
+        trainset, validset = _build_imagenette()
 
         if len(opt.aug_list) > 0:
             policy_list = split(opt.aug_list)
