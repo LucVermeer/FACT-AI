@@ -183,6 +183,21 @@ def create_config(opt):
                 filter='none',
                 lr_decay=True,
                 scoring_choice='loss')
+    elif opt.optim == 'inversed_reduced':
+        config = dict(signed=True,
+                boxed=True,
+                cost_fn='sim',
+                indices='def',
+                weights='equal',
+                lr=0.1,
+                optim='adam',
+                restarts=1,
+                max_iterations=2500,
+                total_variation=1e-4,
+                init='randn',
+                filter='none',
+                lr_decay=True,
+                scoring_choice='loss')
     elif opt.optim == 'inversed-zero':
         config = dict(signed=True,
             boxed=True,
