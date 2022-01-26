@@ -65,7 +65,7 @@ def get_mean_std(train_dataset):
 
 
 def _build_imagenette(csv_file="imagenette2/noisy_imagenette.csv", root_dir='/imagenette2', augmentations=False, normalize=True):
-    """Define ImageNet with everything considered."""
+    """Define Imagenette with everything considered."""
     # Load data
     dataset = Imagenette(csv_file, root_dir)
     train_size = int(0.8 * len(dataset))

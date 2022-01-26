@@ -59,8 +59,7 @@ create_tiny_dataset = True
 
 def create_tiny_imagenette():
     # train_dataset, val_dataset = _build_imagenette('/scratch/', augmentations=False, normalize=False)
-    train_dataset, val_dataset = _build_imagenette(augmentations=False, normalize=False)
-
+    train_dataset, val_dataset = _build_imagenette(augmentations=False, normalize=True)
     # train_indices = torch.arange(5000)
     # val_indices = torch.arange(1000)
 
@@ -71,7 +70,6 @@ def create_tiny_imagenette():
     
     trainloader = data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
     validloader = data.DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
-
     return trainloader, validloader
 
 def create_save_dir(tiny=False):
@@ -90,7 +88,6 @@ def main():
         trainloader, validloader = create_tiny_imagenette()
     else:
         loss_fn, trainloader, validloader = preprocess(opt, defs)
-
     # init model
     model = create_model(opt)
     model.to(**setup)
