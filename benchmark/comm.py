@@ -60,7 +60,6 @@ def build_transform(normalize=True, policy_list=list(), opt=None, defs=None):
     else:
         raise NotImplementedError
 
-    # data_mean, data_std = (0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)
     if mode !=  'crop':
         transform_list = list()
 
@@ -138,6 +137,7 @@ def preprocess(opt, defs, valid=False):
         trainset, validset = _build_imagenette()
 
         if len(opt.aug_list) > 0:
+            print('splitting augmentation list')
             policy_list = split(opt.aug_list)
             print("Policy list:", policy_list)
         else:
