@@ -42,6 +42,7 @@ parser.add_argument('--aug_list', default=[], required=False, type=str, help='Au
 parser.add_argument('--mode', default='normal', required=False, type=str, help='Mode.')
 parser.add_argument('--rlabel', default=False, type=bool, help='remove label.')
 parser.add_argument('--evaluate', default=False, type=bool, help='Evaluate')
+parser.add_argument('--tiny', default=False, type=bool, help='Create tiny dataset')
 
 opt = parser.parse_args()
 
@@ -54,7 +55,7 @@ arch = opt.arch
 trained_model = True
 mode = opt.mode
 assert mode in ['normal', 'aug', 'crop']
-create_tiny_dataset = False
+create_tiny_dataset = opt.tiny
 
 def create_tiny_cifar100():
     train_dataset, val_dataset = _build_cifar100('/scratch/', augmentations=False, normalize=False)
@@ -107,7 +108,7 @@ def main():
 
     stats = inversefed.train(model, loss_fn, trainloader, validloader, defs, setup=setup, save_dir=save_dir)
     
-    np.save(stats_path, stats)
+    np.save(stats_path + '/stats.npy', stats)
 
     torch.save(model.state_dict(), f'{file}')
     model.eval()
@@ -134,8 +135,4 @@ def evaluate():
     print(stats)
 
 if __name__ == '__main__':
-    # if opt.evaluate == True:
-    #     print("Waaarom???")
-    #     evaluate()
-    #     exit(0)
     main()
