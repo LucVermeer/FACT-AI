@@ -16,7 +16,7 @@ class Imagenette(Dataset):
         self.transform = transforms.Compose([
         transforms.Resize(256),
         transforms.CenterCrop(224),
-        transforms.ToTensor().squeeze()])
+        transforms.ToTensor()])
 
     def __len__(self):
         return len(self.labels)
@@ -28,15 +28,20 @@ class Imagenette(Dataset):
         return None
 
     def __getitem__(self, idx):
-        print('getting item', idx)
+        # print('getting item', idx)
         if torch.is_tensor(idx):
             idx = idx.tolist()
         # print('---------------------------------\ngetting item')
         img_name = os.path.join(self.root_dir, self.labels.iloc[idx, 0])
         image = Image.open(img_name)
+        image = self.transform(image)
+        if image.shape[0] == 1:
+            gray = image.squeeze()
+            # gray = torch.div(gray, 3, rounding_mode="floor")
+            image = torch.stack([gray, gray, gray], dim=0)
         targets = self.labels.iloc[idx, 1]
         targets = self.target_one_hot(targets)
-        sample = (self.transform(image), targets)
+        sample = (image, targets)
         return sample
 
 
@@ -53,6 +58,8 @@ def _build_imagenette(csv_file="../../scratch/noisy_imagenette.csv", root_dir='.
     train_size = int(0.8 * len(dataset))
     test_size = len(dataset) - train_size
     trainset, validset = torch.utils.data.random_split(dataset, [train_size, test_size])
+
+    
 
     if imagenet_mean is None:
         data_mean, data_std = get_mean_std(trainset)

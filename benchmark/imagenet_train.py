@@ -16,7 +16,7 @@ import inversefed
 import torchvision.transforms as transforms
 import argparse
 from autoaugment import SubPolicy
-from inversefed.data.data_processing import _build_imagenet, _get_meanstd
+# from inversefed.data.data_processing import _build_imagenet, _get_meanstd
 from inversefed.data.loss import LabelSmoothing
 from inversefed.utils import Cutout
 import torch.nn.functional as F
@@ -57,14 +57,16 @@ mode = opt.mode
 assert mode in ['normal', 'aug', 'crop']
 create_tiny_dataset = True
 
-def create_tiny_imagenette():
+def create_tiny_imagenette(tiny=True):
     # train_dataset, val_dataset = _build_imagenette('/scratch/', augmentations=False, normalize=False)
     train_dataset, val_dataset = _build_imagenette(augmentations=False, normalize=True)
-    # train_indices = torch.arange(5000)
-    # val_indices = torch.arange(1000)
 
-    # train_dataset = data.Subset(train_dataset, train_indices)
-    # val_dataset = data.Subset(val_dataset, val_indices)
+    if tiny:
+        train_indices = torch.arange(5000)
+        val_indices = torch.arange(1000)
+
+        train_dataset = data.Subset(train_dataset, train_indices)
+        val_dataset = data.Subset(val_dataset, val_indices)
     
     batch_size = 32
     
