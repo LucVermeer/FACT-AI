@@ -176,8 +176,7 @@ def main():
     model = create_model(opt)
     model.to(**setup)
     old_state_dict = copy.deepcopy(model.state_dict())
-    # model.load_state_dict(torch.load('checkpoints/tiny_data_{}_arch_{}/{}.pth'.format(opt.data, opt.arch, opt.epochs)))
-    model.load_state_dict(torch.load('checkpoints/tiny_data_cifar100_arch_ResNet20-4_mode_normal_auglist_None_rlabel_True/ResNet20-4_50.pth'))
+    model.load_state_dict(torch.load('checkpoints/tiny_data_cifar100_arch_ResNet20-4_mode_normal_auglist_[]_rlabel_False/ResNet20-4_50.pth'))
 
 
     model.eval()

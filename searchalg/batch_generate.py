@@ -11,15 +11,19 @@ np.random.seed(42)
 parser = argparse.ArgumentParser(description='Reconstruct some image from a trained model.')
 parser.add_argument('--arch', default=None, required=True, type=str, help='Vision model.')
 parser.add_argument('--data', default=None, required=True, type=str, help='Vision dataset.')
+parser.add_argument('--num_per_gpu', default=4, required=False, type=int, help='Number of attacks to run at the same time')
+parser.add_argument('--epochs', default=50, required=False, type=int, help='Epochs')
+parser.add_argument('--k', default=3, required=False, type=int, help='k')
+parser.add_argument('--cmax', default=1500, required=False, type=int, help='Cmax')
 opt = parser.parse_args()
 
 scheme_list = list()
 
 # Variables
-num_per_gpu = 4     # Number of DNNs per GPU
-num_epochs = 50      # Number of epochs
-k = 3
-Cmax = 1500
+num_per_gpu = opt.num_per_gpu     # Number of DNNs per GPU
+num_epochs = opt.epochs      # Number of epochs
+k = opt.k
+Cmax = opt.cmax
 
 
 
@@ -38,10 +42,7 @@ def write():
         print('wait')
 
 
-def backtracing(num):
-    """
-    TODO: Wat betekent 'num'?
-    """
+def backtracing():
     for _ in range(Cmax):
         scheme = list(np.random.randint(-1, 50, k))
         new_policy = deepcopy(scheme)
@@ -51,4 +52,4 @@ def backtracing(num):
 
 
 if __name__ == '__main__':
-    backtracing(5)
+    backtracing()
