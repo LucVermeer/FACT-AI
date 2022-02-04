@@ -140,7 +140,7 @@ def main():
         
     if trained_model:
         checkpoint_dir = create_checkpoint_dir()
-        model.load_state_dict(torch.load('checkpoints/tiny_data_cifar100_arch_ResNet20-4/50.pth'))
+        model.load_state_dict(torch.load('checkpoints/tiny_data_cifar100_arch_ResNet20-4_mode_normal_auglist_[]_rlabel_False/ResNet20-4_50.pth'))
 
     if opt.rlabel:
         for name, param in model.named_parameters():
