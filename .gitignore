@@ -130,6 +130,4 @@ dmypy.json
 searchalg/general_notes.md
 batch_generate.sh
 bash.exe.stackdump
-ResNet20-4_50.pth
-checkpoints/tiny_data_cifar100_arch_ResNet20-4/100.pth
 searchalg/test_batch.sh
